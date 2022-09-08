@@ -9,7 +9,7 @@ import java.util.Set;
  * Configures Jakarta RESTful Web Services for the application.
  * @author Juneau
  */
-@ApplicationPath("access")
+@ApplicationPath("/")
 public class JakartaRestConfiguration extends Application {
     
     @Override
