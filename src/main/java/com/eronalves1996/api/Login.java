@@ -4,14 +4,20 @@
  */
 package com.eronalves1996.api;
 
+import com.eronalves1996.api.resources.InvalidLoginException;
 import com.eronalves1996.api.resources.User;
 import com.eronalves1996.api.resources.UserController;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Response;
+import java.math.BigDecimal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,21 +30,16 @@ public class Login {
     @Consumes("application/json")
     @Produces("application/json")
     public JsonObject doLogin(LoginForm body) {
-
         UserController lc = new UserController();
-        User loggedIn = lc.login(body);
-        JsonObject j;
-        if (loggedIn == null) {
-            j = Json.createObjectBuilder()
-                    .add("status", "Unsucessful login")
-                    .build();
-        } else {
-            j = Json.createObjectBuilder()
-                    .add("status", "Sucessful login")
-                    .add("login from ", loggedIn.getName())
-                    .build();
+        JsonObjectBuilder j = Json.createObjectBuilder();
+        User loggedIn;
+        try {
+            loggedIn = lc.login(body);
+            j.add("status", "logged in");
+        } catch (InvalidLoginException ex) {
+            j.add("status", ex.getMessage());
         }
-        return j;
+        return j.build();
     }
 
 }

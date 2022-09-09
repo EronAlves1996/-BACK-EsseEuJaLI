@@ -12,8 +12,12 @@ import com.eronalves1996.api.LoginForm;
  */
 public class UserController {
     
-    public User login(LoginForm data){
+    public User login(LoginForm data) throws InvalidLoginException {
         UserDAO.createConnection();
-        return UserDAO.selectUser(data);
+        User x = UserDAO.selectUser(data);
+        if (!x.getPassword().equals(data.password)){
+            throw new InvalidLoginException("Incorrect password");
+        }
+        return x;
     }
 }

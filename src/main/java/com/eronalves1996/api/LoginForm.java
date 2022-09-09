@@ -11,9 +11,7 @@ import jakarta.json.bind.annotation.JsonbProperty;
  * @author eronads
  */
 public class LoginForm{
-    @JsonbProperty("email")
     public String email;
-    @JsonbProperty("password")
     public String password;
     
     public LoginForm(){
