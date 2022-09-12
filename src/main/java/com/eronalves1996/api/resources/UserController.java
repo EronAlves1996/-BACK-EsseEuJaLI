@@ -4,6 +4,8 @@
  */
 package com.eronalves1996.api.resources;
 
+import java.util.Date;
+
 import com.eronalves1996.api.LoginForm;
 
 /**
@@ -19,5 +21,11 @@ public class UserController {
             throw new InvalidLoginException("Incorrect password");
         }
         return x;
+    }
+    
+    public Date createUserSession(String email) throws InvalidLoginException {
+        Date d = new Date();
+        UserDAO.createLoginEntry(email, d);
+        return d;
     }
 }

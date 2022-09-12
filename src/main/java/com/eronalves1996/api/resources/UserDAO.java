@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Date;
 
 /**
  *
@@ -49,5 +50,18 @@ public class UserDAO {
             ex.printStackTrace();
         }
         return new User();
+    }
+    
+    public static void createLoginEntry(String email, Date loggedAt) throws InvalidLoginException {
+        try {
+            stmt = conn.createStatement();
+            String sql = "INSERT INTO Login_Control VALUES ('" + email + "', '" + loggedAt.toString() + "')";
+            stmt.executeUpdate(sql);
+            stmt.close();
+        } catch (Exception ex) {
+            System.out.println("Não foi possível realizar login");
+            ex.printStackTrace();
+            throw new InvalidLoginException("Erro interno de servidor");
+        }
     }
 }

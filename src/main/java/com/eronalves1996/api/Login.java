@@ -4,6 +4,8 @@
  */
 package com.eronalves1996.api;
 
+import java.util.Date;
+
 import com.eronalves1996.api.resources.InvalidLoginException;
 import com.eronalves1996.api.resources.User;
 import com.eronalves1996.api.resources.UserController;
@@ -30,29 +32,29 @@ public class Login {
     @Produces("application/json")
     public Response doLogin(LoginForm body) {
         UserController lc = new UserController();
-        JsonObjectBuilder j = Json.createObjectBuilder();
         User loggedIn;
+        Cookie nk;
+        Cookie nd;
         try {
             loggedIn = lc.login(body);
-            j.add("status", "logged in")
-            .add("as ", loggedIn.getName());
+            nk = new Cookie("user", loggedIn.getEmail());
+            nd = new Cookie("created at", lc.createUserSession(loggedIn.getEmail()).toString());
         } catch (InvalidLoginException ex) {
             return Response
                     .status(401)
                     .entity(new Object() {
-                        public String status = "Unauthorized";
+                        public String status = ex.getMessage();
                     })
-                    .cookie()
                     .build();
         }
-        Cookie nk = new Cookie("user", loggedIn.getEmail());
         return Response
                 .status(200)
                 .entity(new Object() {
                     public String status = "Authorized";
                     public String user = loggedIn.getName();
+                    public Date created = new Date();
                 })
-                .cookie(new NewCookie(nk))
+                .cookie(new NewCookie(nk), new NewCookie(nd))
                 .build();
     }
 
