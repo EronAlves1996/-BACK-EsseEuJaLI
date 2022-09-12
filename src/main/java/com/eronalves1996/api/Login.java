@@ -10,14 +10,13 @@ import com.eronalves1996.api.resources.UserController;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
-import java.math.BigDecimal;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -29,17 +28,32 @@ public class Login {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public JsonObject doLogin(LoginForm body) {
+    public Response doLogin(LoginForm body) {
         UserController lc = new UserController();
         JsonObjectBuilder j = Json.createObjectBuilder();
         User loggedIn;
         try {
             loggedIn = lc.login(body);
-            j.add("status", "logged in");
+            j.add("status", "logged in")
+            .add("as ", loggedIn.getName());
         } catch (InvalidLoginException ex) {
-            j.add("status", ex.getMessage());
+            return Response
+                    .status(401)
+                    .entity(new Object() {
+                        public String status = "Unauthorized";
+                    })
+                    .cookie()
+                    .build();
         }
-        return j.build();
+        Cookie nk = new Cookie("user", loggedIn.getEmail());
+        return Response
+                .status(200)
+                .entity(new Object() {
+                    public String status = "Authorized";
+                    public String user = loggedIn.getName();
+                })
+                .cookie(new NewCookie(nk))
+                .build();
     }
 
 }
