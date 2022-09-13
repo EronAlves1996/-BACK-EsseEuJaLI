@@ -16,6 +16,7 @@ public class JakartaRestConfiguration extends Application {
     public Set<Class<?>> getClasses() {
         final Set<Class<?>> classes = new HashSet<>();
         classes.add(Login.class);
+        classes.add(Validate.class);
         return classes;
     }
 }
