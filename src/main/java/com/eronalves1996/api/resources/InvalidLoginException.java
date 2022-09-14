@@ -9,6 +9,9 @@ package com.eronalves1996.api.resources;
  * @author eronads
  */
 public class InvalidLoginException extends Exception {
+
+    private static final long serialVersionUID = 3208999515119419278L;
+
     public InvalidLoginException(String msg){
         super(msg);
     }

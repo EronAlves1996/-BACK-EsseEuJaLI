@@ -38,7 +38,8 @@ public class UserDAO {
 
     public static User selectUser(LoginForm lf) {
         try {
-            stmt = conn.createStatement();
+            if (conn == null) createConnection();
+            if (stmt == null || stmt.isClosed()) stmt = conn.createStatement();
             ResultSet results = stmt.executeQuery("SELECT * FROM " + table + " WHERE email = '" + lf.email + "'");
             results.next();
             User user = new User();
@@ -57,7 +58,8 @@ public class UserDAO {
 
     public static void createLoginEntry(String email, Date loggedAt) throws InvalidLoginException, SQLException {
         try {
-            if (stmt.isClosed())
+            if (conn == null) createConnection();
+            if (stmt == null || stmt.isClosed())
                 stmt = conn.createStatement();
             String sql = "INSERT INTO Login_Control VALUES ('" + email + "', '" + loggedAt.toString() + "')";
             stmt.executeUpdate(sql);
@@ -77,13 +79,11 @@ public class UserDAO {
     public static User verifyActiveLogin(String user, String date) throws InvalidLoginException, SQLException {
         if (conn == null)
             createConnection();
-        stmt = conn.createStatement();
+        if(stmt == null || stmt.isClosed()) stmt = conn.createStatement();
         ResultSet results = stmt
                 .executeQuery("SELECT * FROM Login_Control WHERE email='" + user + "'");         
         
         results.next();
-        System.out.println(date);
-        System.out.println(results.getString(2));
         if(!date.equals(results.getString(2))) throw new InvalidLoginException("Login not found");                      
         results.close();
         stmt.close();

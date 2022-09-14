@@ -7,7 +7,6 @@ package com.eronalves1996.api;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Base64.Decoder;
-import java.util.Date;
 
 import com.eronalves1996.api.resources.InvalidLoginException;
 import com.eronalves1996.api.resources.User;
@@ -29,30 +28,35 @@ import jakarta.ws.rs.core.Response;
 @Path("login")
 public class Login {
 
+    private static final String ROOT_DOMAIN = "localhost";
+    private static final String GENERAL_PATH = "/api";
+
     @GET
     @Produces("application/json")
     public Response doLogin(@Context HttpServletRequest request) {
-        UserController lc = new UserController();
+        UserController userController = new UserController();
         Decoder decoder = Base64.getDecoder();
         
-        User loggedIn;
-        Cookie nk;
-        Cookie nd;
+        User userLoggedIn;
+        Cookie userCookie;
+        Cookie loginDateCookie;
+        
         try {
             String auth = request.getHeader("Authorization");
             if(auth == null) throw new InvalidLoginException("Bad request");
             
-            String decodedString = new String(decoder.decode(auth), StandardCharsets.UTF_8);
-            String[] rawUser = decodedString.split(":");
-            LoginForm lf = new LoginForm(rawUser[0], rawUser[1]);
-            loggedIn = lc.login(lf);
-            nk = new Cookie("user", loggedIn.getEmail(), "/api", "localhost");
-            nd = new Cookie("created_at", lc.createUserSession(loggedIn.getEmail()).toString(), "/api", "localhost");
+            String[] rawUser = (new String(decoder.decode(auth), StandardCharsets.UTF_8)).split(":");
+            String email = rawUser[0];
+            String password = rawUser[1];            
+            userLoggedIn = userController.login(new LoginForm(email, password));
+            userCookie = new Cookie("user", userLoggedIn.getEmail(), GENERAL_PATH, ROOT_DOMAIN);
+            loginDateCookie = new Cookie("created_at", userController.createUserSession(userLoggedIn.getEmail()).toString(), GENERAL_PATH, ROOT_DOMAIN);
             
         } catch (InvalidLoginException ex) {
             return Response
                     .status(ex.getMessage().equals("Bad request") ? 400 : 401)
                     .entity(new Object() {
+                        @SuppressWarnings("unused")
                         public String status = ex.getMessage();
                     })
                     .header("WWW-Authenticate", "Basic realm=\"Access to the restricted area\", charset=\"UTF-8\"")
@@ -60,12 +64,8 @@ public class Login {
         }
         return Response
                 .status(200)
-                .entity(new Object() {
-                    public String status = "Authorized";
-                    public String user = loggedIn.getName();
-                    public Date created = new Date();
-                })
-                .cookie(new NewCookie(nk), new NewCookie(nd))
+                .entity(userLoggedIn)
+                .cookie(new NewCookie(userCookie), new NewCookie(loginDateCookie))
                 .build();
     }
 

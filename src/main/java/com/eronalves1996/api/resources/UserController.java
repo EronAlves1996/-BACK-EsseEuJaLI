@@ -14,23 +14,22 @@ import com.eronalves1996.api.LoginForm;
  */
 public class UserController {
     
-    public User login(LoginForm data) throws InvalidLoginException {
-        UserDAO.createConnection();
-        User x = UserDAO.selectUser(data);
-        if (!x.getPassword().equals(data.password)){
+    public User login(LoginForm informedCredentials) throws InvalidLoginException {
+        User selectedUser = UserDAO.selectUser(informedCredentials);
+        if (!selectedUser.getPassword().equals(informedCredentials.password)){
             throw new InvalidLoginException("Incorrect password");
         }
-        return x;
+        return selectedUser;
     }
     
     public Date createUserSession(String email) throws InvalidLoginException {
-        Date d = new Date();
+        Date loginDateAndHour = new Date();
         try { 
-            UserDAO.createLoginEntry(email, d);
-            return d;
+            UserDAO.createLoginEntry(email, loginDateAndHour);
+            return loginDateAndHour;
         } catch(Exception ex) {
             ex.printStackTrace();
         }
-        return d;
+        return loginDateAndHour;
     }
 }
