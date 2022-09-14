@@ -15,13 +15,8 @@ import com.eronalves1996.api.resources.UserController;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Cookie;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.NewCookie;
@@ -53,6 +48,7 @@ public class Login {
             loggedIn = lc.login(lf);
             nk = new Cookie("user", loggedIn.getEmail(), "/api", "localhost");
             nd = new Cookie("created_at", lc.createUserSession(loggedIn.getEmail()).toString(), "/api", "localhost");
+            
         } catch (InvalidLoginException ex) {
             return Response
                     .status(ex.getMessage().equals("Bad request") ? 400 : 401)

@@ -8,8 +8,11 @@ import com.eronalves1996.api.LoginForm;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+
+import org.apache.derby.shared.common.error.DerbySQLIntegrityConstraintViolationException;
 
 /**
  *
@@ -26,15 +29,15 @@ public class UserDAO {
     public static void createConnection() {
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
-            //Get a connection
+            // Get a connection
             conn = DriverManager.getConnection(URL);
         } catch (Exception except) {
             except.printStackTrace();
         }
     }
-    
-    public static User selectUser(LoginForm lf){
-        try{
+
+    public static User selectUser(LoginForm lf) {
+        try {
             stmt = conn.createStatement();
             ResultSet results = stmt.executeQuery("SELECT * FROM " + table + " WHERE email = '" + lf.email + "'");
             results.next();
@@ -51,17 +54,39 @@ public class UserDAO {
         }
         return new User();
     }
-    
-    public static void createLoginEntry(String email, Date loggedAt) throws InvalidLoginException {
+
+    public static void createLoginEntry(String email, Date loggedAt) throws InvalidLoginException, SQLException {
         try {
-            stmt = conn.createStatement();
+            if (stmt.isClosed())
+                stmt = conn.createStatement();
             String sql = "INSERT INTO Login_Control VALUES ('" + email + "', '" + loggedAt.toString() + "')";
             stmt.executeUpdate(sql);
             stmt.close();
+        } catch (DerbySQLIntegrityConstraintViolationException ex) {
+            String sql = "DELETE FROM Login_Control WHERE email = '" + email + "'";
+            stmt.executeUpdate(sql);
+            createLoginEntry(email, loggedAt);
         } catch (Exception ex) {
             System.out.println("Não foi possível realizar login");
             ex.printStackTrace();
             throw new InvalidLoginException("Erro interno de servidor");
         }
+
+    }
+
+    public static User verifyActiveLogin(String user, String date) throws InvalidLoginException, SQLException {
+        if (conn == null)
+            createConnection();
+        stmt = conn.createStatement();
+        ResultSet results = stmt
+                .executeQuery("SELECT * FROM Login_Control WHERE email='" + user + "'");         
+        
+        results.next();
+        System.out.println(date);
+        System.out.println(results.getString(2));
+        if(!date.equals(results.getString(2))) throw new InvalidLoginException("Login not found");                      
+        results.close();
+        stmt.close();
+        return selectUser(new LoginForm(user, ""));
     }
 }

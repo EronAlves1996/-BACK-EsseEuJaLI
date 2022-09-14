@@ -25,7 +25,12 @@ public class UserController {
     
     public Date createUserSession(String email) throws InvalidLoginException {
         Date d = new Date();
-        UserDAO.createLoginEntry(email, d);
+        try { 
+            UserDAO.createLoginEntry(email, d);
+            return d;
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
         return d;
     }
 }
