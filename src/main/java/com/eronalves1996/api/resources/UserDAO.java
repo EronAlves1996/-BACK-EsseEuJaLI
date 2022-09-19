@@ -88,4 +88,13 @@ public class UserDAO {
         stmt.close();
         return selectUser(new LoginForm(user, ""));
     }
+    
+    public static void deleteLogin(String user, String date) throws SQLException {
+        if (conn == null)
+            createConnection();
+        if(stmt == null || stmt.isClosed()) stmt = conn.createStatement();
+        String sql = "DELETE FROM Login_Control WHERE email ='" + user + "' AND Logged_At='" + date + "'";
+        System.out.println(stmt.executeUpdate(sql));
+        stmt.close();
+    }
 }

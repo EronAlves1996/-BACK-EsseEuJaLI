@@ -65,7 +65,7 @@ public class Login {
         return Response
                 .status(200)
                 .entity(userLoggedIn)
-                .cookie(new NewCookie(userCookie), new NewCookie(loginDateCookie))
+                .cookie(new NewCookie(userCookie, "Cookie to identify user", 60 * 60 * 24 * 365, false), new NewCookie(loginDateCookie, "Identify date/hour of user login", 60 * 60 * 24 * 365, false))
                 .build();
     }
 

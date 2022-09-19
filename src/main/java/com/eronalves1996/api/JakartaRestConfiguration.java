@@ -18,6 +18,7 @@ public class JakartaRestConfiguration extends Application {
         classes.add(Login.class);
         classes.add(Validate.class);
         classes.add(FilterCORS.class);
+        classes.add(Logout.class);
         return classes;
     }
 }
