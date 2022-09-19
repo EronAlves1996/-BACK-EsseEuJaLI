@@ -46,7 +46,6 @@ public class UserDAO {
             user.setEmail(results.getString(1));
             user.setPassword(results.getString(2));
             user.setName(results.getString(3));
-            user.setTotalPoints(results.getInt(4));
             results.close();
             stmt.close();
             return user;

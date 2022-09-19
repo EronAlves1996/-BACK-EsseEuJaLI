@@ -12,13 +12,11 @@ public class User {
     private String email;
     private String password;
     private String name;
-    private int totalPoints;
 
-    public User(String email, String password, String name, int totalPoints) {
+    public User(String email, String password, String name) {
         this.email = email;
         this.password = password;
         this.name = name;
-        this.totalPoints = totalPoints;
     }
     
     public User() {
@@ -46,14 +44,6 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getTotalPoints() {
-        return totalPoints;
-    }
-
-    public void setTotalPoints(int totalPoints) {
-        this.totalPoints = totalPoints;
     }
     
     

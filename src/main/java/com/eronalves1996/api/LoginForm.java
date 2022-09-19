@@ -4,7 +4,6 @@
  */
 package com.eronalves1996.api;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 
 /**
  *
