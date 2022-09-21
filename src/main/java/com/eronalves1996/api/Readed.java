@@ -2,14 +2,15 @@ package com.eronalves1996.api;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import com.eronalves1996.api.resources.BookReaded;
 import com.eronalves1996.api.resources.UserDAO;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
@@ -39,5 +40,22 @@ public class Readed {
         return Response.status(books.size() == 0? 204: 200).entity(books).build();
     }
     
-  
+    @POST
+    @Consumes("application/json")
+    public Response markBookAsRead(BookReaded book) {
+        try {
+            UserDAO.markBookAsRead(book);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response
+                    .serverError()
+                    .entity(new Object() {
+                        public String mss = "That whas not possible to mark as read";
+                    })
+                    .build();
+        }
+        return Response
+                .accepted()
+                .build();
+    }
 }

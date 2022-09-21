@@ -13,6 +13,10 @@ public class BookReaded {
         this.categorie = categorie;
     }
     
+    public BookReaded() {
+        
+    }
+    
     public String getUser() {
         return user;
     }

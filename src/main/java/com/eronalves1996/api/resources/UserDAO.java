@@ -97,15 +97,24 @@ public class UserDAO {
         String sql = "SELECT * FROM Readed_Books WHERE email = '" + user + "'";
         ResultSet results = stmt.executeQuery(sql);
         books = new ArrayList<>();
-        while(results.next()) {
+        while (results.next()) {
             books.add(new BookReaded(results.getString(1), results.getString(2), results.getString(3)));
-        } 
+        }
         closeConnections(results);
         return books;
     }
 
+    public static void markBookAsRead(BookReaded book) throws SQLException {
+        openConnections();
+        String sql = "INSERT INTO Readed_Books VALUES ('" + book.getUser() + "', '" + book.getBook_id() + "', '"
+                + book.getCategorie() + "')";
+        stmt.executeUpdate(sql);
+        closeConnections();
+    }
+
     private static void openConnections() throws SQLException {
-        if (conn == null || conn.isClosed()) createConnection();
+        if (conn == null || conn.isClosed())
+            createConnection();
         if (stmt == null || stmt.isClosed())
             stmt = conn.createStatement();
     }
@@ -125,4 +134,5 @@ public class UserDAO {
         if (!result.isClosed())
             result.close();
     }
+
 }
