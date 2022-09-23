@@ -28,6 +28,7 @@ public class UserDAO {
     private static Connection conn = null;
     private static Statement stmt = null;
 
+    @SuppressWarnings("deprecation")
     public static void createConnection() {
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();

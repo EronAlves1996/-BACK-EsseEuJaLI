@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.servlet.http.Cookie;
 
@@ -37,7 +38,10 @@ public class Validate {
             return Response.status(401).entity(new Object() {
                 @SuppressWarnings("unused")
                 public String status = "Login not found";
-            }).header("WWW-Authenticate", "Basic realm=\"Access to the restricted area\", charset=\"UTF-8\"").build();
+            }).cookie(new NewCookie("user", user, "/api", "localhost", "", 0, false),
+                    new NewCookie("created_at", date, "/api", "localhost", "", 0, false))
+                    .header("WWW-Authenticate", "xBasic realm=\"Access to the restricted area\", charset=\"UTF-8\"")
+                    .build();
         }
 
         return Response.status(200).entity(actualUser).build();
