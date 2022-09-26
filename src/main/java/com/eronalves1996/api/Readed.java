@@ -1,5 +1,6 @@
 package com.eronalves1996.api;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,5 +91,14 @@ public class Readed {
             }).build();
         }
         return Response.accepted().build();
+    }
+    
+    @GET
+    @Path("/ranking")
+    public Response getRanking() throws SQLException {
+        return Response
+                .ok()
+                .entity(DAO.getRanking())
+                .build();
     }
 }

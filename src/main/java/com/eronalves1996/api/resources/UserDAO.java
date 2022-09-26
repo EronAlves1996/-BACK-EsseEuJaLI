@@ -74,7 +74,7 @@ public class UserDAO {
 
     }
 
-    public  User verifyActiveLogin(String user, String date) throws InvalidLoginException, SQLException {
+    public User verifyActiveLogin(String user, String date) throws InvalidLoginException, SQLException {
         openConnections();
         ResultSet results = stmt.executeQuery("SELECT * FROM Login_Control WHERE email='" + user + "'");
 
@@ -99,7 +99,8 @@ public class UserDAO {
         ResultSet results = stmt.executeQuery(sql);
         books = new ArrayList<>();
         while (results.next()) {
-            books.add(new BookReaded(results.getString(1), results.getString(2), results.getString(3), results.getInt(4)));
+            books.add(new BookReaded(results.getString(1), results.getString(2), results.getString(3),
+                    results.getInt(4)));
         }
         closeConnections(results);
         return books;
@@ -113,14 +114,33 @@ public class UserDAO {
         closeConnections();
     }
 
-    public BookReaded verifyIfBookIsRead(String user, String id) throws SQLException{ 
+    public BookReaded verifyIfBookIsRead(String user, String id) throws SQLException {
         String sql = "SELECT * FROM Readed_Books WHERE email='" + user + "' AND book_isbn='" + id + "'";
         openConnections();
         ResultSet results = stmt.executeQuery(sql);
         results.next();
-        BookReaded br = new BookReaded(results.getString(1), results.getString(2), results.getString(3), results.getInt(4));
+        BookReaded br = new BookReaded(results.getString(1), results.getString(2), results.getString(3),
+                results.getInt(4));
         closeConnections(results);
         return br;
+    }
+
+    public List<RankingInfo> getRanking() throws SQLException {
+        String sql = "SELECT User_Info.name, SUM(Readed_Books.related_points) FROM Readed_Books INNER JOIN User_Info ON Readed_Books.email=User_Info.email GROUP BY User_Info.name ORDER BY 2 DESC";
+        openConnections();
+        ResultSet results = stmt.executeQuery(sql);
+        List<RankingInfo> ril = new ArrayList<RankingInfo>();
+        int position = 1;
+        while (results.next()) {
+            RankingInfo ri = new RankingInfo();
+            ri.user = results.getString(1);
+            ri.points = results.getInt(2);
+            ri.position = position;
+            ril.add(ri);
+            position++;
+        }
+        closeConnections(results);
+        return ril;
     }
 
     private void openConnections() throws SQLException {
