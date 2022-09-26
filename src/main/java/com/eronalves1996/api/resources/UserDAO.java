@@ -99,7 +99,7 @@ public class UserDAO {
         ResultSet results = stmt.executeQuery(sql);
         books = new ArrayList<>();
         while (results.next()) {
-            books.add(new BookReaded(results.getString(1), results.getString(2), results.getString(3)));
+            books.add(new BookReaded(results.getString(1), results.getString(2), results.getString(3), results.getInt(4)));
         }
         closeConnections(results);
         return books;
@@ -108,17 +108,17 @@ public class UserDAO {
     public static void markBookAsRead(BookReaded book) throws SQLException {
         openConnections();
         String sql = "INSERT INTO Readed_Books VALUES ('" + book.getUser() + "', '" + book.getBook_id() + "', '"
-                + book.getCategorie() + "')";
+                + book.getCategorie() + "', " + book.getRelated_points() + ")";
         stmt.executeUpdate(sql);
         closeConnections();
     }
 
     public static BookReaded verifyIfBookIsRead(String user, String id) throws SQLException{ 
         openConnections();
-        String sql = "SELECT * FROM Readed_Books WHERE email='" + user + "' AND book_id='" + id + "'";
+        String sql = "SELECT * FROM Readed_Books WHERE email='" + user + "' AND book_isbn='" + id + "'";
         ResultSet results = stmt.executeQuery(sql);
         results.next();
-        BookReaded br = new BookReaded(results.getString(1), results.getString(2), results.getString(3));
+        BookReaded br = new BookReaded(results.getString(1), results.getString(2), results.getString(3), results.getInt(4));
         closeConnections(results);
         return br;
     }
