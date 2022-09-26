@@ -13,6 +13,8 @@ import jakarta.servlet.http.Cookie;
 
 @Path("/validate")
 public class Validate {
+    
+    private UserDAO DAO = new UserDAO();
 
     @GET
     public Response doValidate(@Context HttpServletRequest request) {
@@ -33,7 +35,7 @@ public class Validate {
         }
 
         try {
-            actualUser = UserDAO.verifyActiveLogin(user, date);
+            actualUser = DAO.verifyActiveLogin(user, date);
         } catch (Exception ex) {
             return Response.status(401).entity(new Object() {
                 @SuppressWarnings("unused")

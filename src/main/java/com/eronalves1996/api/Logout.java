@@ -16,6 +16,8 @@ import jakarta.ws.rs.DELETE;
 @Path("/logout")
 public class Logout {
     
+    private UserDAO DAO = new UserDAO();
+    
     @DELETE
     public void doLogout(@Context HttpServletRequest request, @Context HttpServletResponse response) throws IOException {
         Cookie[] cookies = request.getCookies();
@@ -39,7 +41,7 @@ public class Logout {
         }
         
         try {
-            UserDAO.deleteLogin(user, date);
+            DAO.deleteLogin(user, date);
         } catch(Exception ex) {
             
             response.setStatus(400);

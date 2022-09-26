@@ -26,11 +26,11 @@ public class BookReaded {
     public void setUser(String user) {
         this.user = user;
     }
-    public String getBook_id() {
+    public String getBook_isbn() {
         return book_isbn;
     }
-    public void setBook_id(String book_id) {
-        this.book_isbn = book_id;
+    public void setBook_isbn(String book_isbn) {
+        this.book_isbn = book_isbn;
     }
     public String getCategorie() {
         return categorie;

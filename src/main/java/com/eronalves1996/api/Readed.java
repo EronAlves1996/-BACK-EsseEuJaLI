@@ -19,7 +19,9 @@ import jakarta.ws.rs.core.Response;
 
 @Path("readed")
 public class Readed {
-
+    
+    private UserDAO DAO = new UserDAO();
+    
     @GET
     @Produces("application/json")
     public Response getAllReadedBooks(@Context HttpServletRequest request) {
@@ -37,7 +39,7 @@ public class Readed {
         List<BookReaded> books = null;
 
         try {
-            books = UserDAO.getAllBooksReaded(user);
+            books = DAO.getAllBooksReaded(user);
         } catch (Exception ex) {
             ex.printStackTrace();
             return Response.serverError().entity(new Object() {
@@ -64,7 +66,7 @@ public class Readed {
         }
         
         try {
-            UserDAO.verifyIfBookIsRead(user, id);
+            DAO.verifyIfBookIsRead(user, id);
         } catch (Exception ex) {
             return Response
                     .status(404).build();
@@ -79,7 +81,7 @@ public class Readed {
     @Consumes("application/json")
     public Response markBookAsRead(BookReaded book) {
         try {
-            UserDAO.markBookAsRead(book);
+            DAO.markBookAsRead(book);
         } catch (Exception ex) {
             ex.printStackTrace();
             return Response.serverError().entity(new Object() {

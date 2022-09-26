@@ -25,11 +25,11 @@ public class UserDAO {
     private final static String URL = "jdbc:derby://localhost:1527/jaLiDb";
     private final static String table = "User_Info";
 
-    private static Connection conn = null;
-    private static Statement stmt = null;
+    private Connection conn = null;
+    private Statement stmt = null;
 
     @SuppressWarnings("deprecation")
-    public static void createConnection() {
+    public void createConnection() {
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver").newInstance();
             // Get a connection
@@ -39,7 +39,7 @@ public class UserDAO {
         }
     }
 
-    public static User selectUser(LoginForm lf) {
+    public User selectUser(LoginForm lf) {
         try {
             openConnections();
             ResultSet results = stmt.executeQuery("SELECT * FROM " + table + " WHERE email = '" + lf.email + "'");
@@ -56,7 +56,7 @@ public class UserDAO {
         return new User();
     }
 
-    public static void createLoginEntry(String email, Date loggedAt) throws InvalidLoginException, SQLException {
+    public void createLoginEntry(String email, Date loggedAt) throws InvalidLoginException, SQLException {
         try {
             openConnections();
             String sql = "INSERT INTO Login_Control VALUES ('" + email + "', '" + loggedAt.toString() + "')";
@@ -74,7 +74,7 @@ public class UserDAO {
 
     }
 
-    public static User verifyActiveLogin(String user, String date) throws InvalidLoginException, SQLException {
+    public  User verifyActiveLogin(String user, String date) throws InvalidLoginException, SQLException {
         openConnections();
         ResultSet results = stmt.executeQuery("SELECT * FROM Login_Control WHERE email='" + user + "'");
 
@@ -85,17 +85,17 @@ public class UserDAO {
         return selectUser(new LoginForm(user, ""));
     }
 
-    public static void deleteLogin(String user, String date) throws SQLException {
-        openConnections();
+    public void deleteLogin(String user, String date) throws SQLException {
         String sql = "DELETE FROM Login_Control WHERE email ='" + user + "' AND Logged_At='" + date + "'";
-        System.out.println(stmt.executeUpdate(sql));
+        openConnections();
+        stmt.executeUpdate(sql);
         closeConnections();
     }
 
-    public static List<BookReaded> getAllBooksReaded(String user) throws SQLException {
+    public List<BookReaded> getAllBooksReaded(String user) throws SQLException {
         List<BookReaded> books = null;
-        openConnections();
         String sql = "SELECT * FROM Readed_Books WHERE email = '" + user + "'";
+        openConnections();
         ResultSet results = stmt.executeQuery(sql);
         books = new ArrayList<>();
         while (results.next()) {
@@ -105,17 +105,17 @@ public class UserDAO {
         return books;
     }
 
-    public static void markBookAsRead(BookReaded book) throws SQLException {
+    public void markBookAsRead(BookReaded book) throws SQLException {
         openConnections();
-        String sql = "INSERT INTO Readed_Books VALUES ('" + book.getUser() + "', '" + book.getBook_id() + "', '"
+        String sql = "INSERT INTO Readed_Books VALUES ('" + book.getUser() + "', '" + book.getBook_isbn() + "', '"
                 + book.getCategorie() + "', " + book.getRelated_points() + ")";
         stmt.executeUpdate(sql);
         closeConnections();
     }
 
-    public static BookReaded verifyIfBookIsRead(String user, String id) throws SQLException{ 
-        openConnections();
+    public BookReaded verifyIfBookIsRead(String user, String id) throws SQLException{ 
         String sql = "SELECT * FROM Readed_Books WHERE email='" + user + "' AND book_isbn='" + id + "'";
+        openConnections();
         ResultSet results = stmt.executeQuery(sql);
         results.next();
         BookReaded br = new BookReaded(results.getString(1), results.getString(2), results.getString(3), results.getInt(4));
@@ -123,27 +123,28 @@ public class UserDAO {
         return br;
     }
 
-    private static void openConnections() throws SQLException {
+    private void openConnections() throws SQLException {
         if (conn == null || conn.isClosed())
             createConnection();
         if (stmt == null || stmt.isClosed())
             stmt = conn.createStatement();
     }
 
-    private static void closeConnections() throws SQLException {
+    private void closeConnections() throws SQLException {
         if (!stmt.isClosed())
             stmt.close();
         if (!conn.isClosed())
             conn.close();
     }
 
-    private static void closeConnections(ResultSet result) throws SQLException {
+    private void closeConnections(ResultSet result) throws SQLException {
+        if (!result.isClosed())
+            result.close();
         if (!stmt.isClosed())
             stmt.close();
         if (!conn.isClosed())
             conn.close();
-        if (!result.isClosed())
-            result.close();
+
     }
 
 }

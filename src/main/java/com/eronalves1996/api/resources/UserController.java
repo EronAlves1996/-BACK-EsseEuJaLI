@@ -14,8 +14,10 @@ import com.eronalves1996.api.LoginForm;
  */
 public class UserController {
     
+    private UserDAO DAO = new UserDAO();
+    
     public User login(LoginForm informedCredentials) throws InvalidLoginException {
-        User selectedUser = UserDAO.selectUser(informedCredentials);
+        User selectedUser = DAO.selectUser(informedCredentials);
         if (!selectedUser.getPassword().equals(informedCredentials.password)){
             throw new InvalidLoginException("Incorrect password");
         }
@@ -25,7 +27,7 @@ public class UserController {
     public Date createUserSession(String email) throws InvalidLoginException {
         Date loginDateAndHour = new Date();
         try { 
-            UserDAO.createLoginEntry(email, loginDateAndHour);
+            DAO.createLoginEntry(email, loginDateAndHour);
             return loginDateAndHour;
         } catch(Exception ex) {
             ex.printStackTrace();
