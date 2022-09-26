@@ -113,6 +113,16 @@ public class UserDAO {
         closeConnections();
     }
 
+    public static BookReaded verifyIfBookIsRead(String user, String id) throws SQLException{ 
+        openConnections();
+        String sql = "SELECT * FROM Readed_Books WHERE email='" + user + "' AND book_id='" + id + "'";
+        ResultSet results = stmt.executeQuery(sql);
+        results.next();
+        BookReaded br = new BookReaded(results.getString(1), results.getString(2), results.getString(3));
+        closeConnections(results);
+        return br;
+    }
+
     private static void openConnections() throws SQLException {
         if (conn == null || conn.isClosed())
             createConnection();

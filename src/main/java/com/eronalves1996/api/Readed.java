@@ -12,11 +12,12 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 
-@Path("/readed")
+@Path("readed")
 public class Readed {
 
     @GET
@@ -46,6 +47,32 @@ public class Readed {
         }
 
         return Response.status(books.size() == 0 ? 204 : 200).entity(books).build();
+    }
+    
+    @GET
+    @Path("/{id}")
+    public Response verifyIfBookIsRead(@Context HttpServletRequest request, @PathParam("id") String id) {
+        Cookie[] cookies = request.getCookies();
+        String user;
+        try {
+            user = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("user")).findFirst().get()
+                    .getValue();
+        } catch (NullPointerException ex) {
+            return Response
+                    .status(401)
+                    .build();
+        }
+        
+        try {
+            UserDAO.verifyIfBookIsRead(user, id);
+        } catch (Exception ex) {
+            return Response
+                    .status(404).build();
+        }
+        
+        return Response
+                .ok()
+                .build();
     }
 
     @POST
